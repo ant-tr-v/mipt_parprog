@@ -1,6 +1,3 @@
-//
-// Created by anton on 17.09.18.
-//
 
 #ifndef QT_GRIDPAINTER_HPP
 #define QT_GRIDPAINTER_HPP

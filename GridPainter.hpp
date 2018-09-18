@@ -29,6 +29,7 @@ public:
   Life(QWidget *parent = nullptr);
   void setGrid(int width, int height);
   void setPoint(int x, int y) { grid[active_index][x + y*g_width] = 1; }
+  void setNumThreads(int x);
 
   int getGridWidht() { return g_width; }
   int getGridHeight() { return g_height; }

@@ -22,8 +22,10 @@ int main(int argc, char *argv[])
   QApplication app(argc, argv);
   Life game;
   game.setGrid(1000, 1000);
+  game.setNumThreads(4);
   setRandomGrid(game);
-  //game.setPoint(0, 2);
+
+
   game.show();
   return app.exec();
 }

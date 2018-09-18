@@ -4,9 +4,7 @@
 #include <omp.h>
 
 /*TODO:
- * 1) x, y - coments
  * 2) assert for wrong usage
- * 3) label to conner
 */
 Life::Life(QWidget *parent)
 	: QWidget(parent)
@@ -15,17 +13,11 @@ Life::Life(QWidget *parent)
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(nextStep()));
 	timer->start(1);
-
+	omp_set_num_threads(1);
 	setWindowTitle(("Life"));
 	resize( win_width, win_height);
 }
-/*		---------------------->	
-*               |                     y
-* 		|
-*		|
-*		|
-*		\/ x
-*/
+
 void Life::paintEvent(QPaintEvent *)
 {
 	QColor color(0, 240, 0);
@@ -46,10 +38,6 @@ void Life::paintEvent(QPaintEvent *)
 	painter.setBrush(color);
 	painter.setPen(color);
 
-	//painter.save();
-	//painter.rotate(30.0 * ((time.hour() + time.minute() / 60.0)));
-	//painter.drawConvexPolygon(hourHand, 3);
-	//painter.restore();
 	int *ptr = grid[active_index];
 
 	for (int i = 0; i < g_width; i++)
@@ -58,24 +46,25 @@ void Life::paintEvent(QPaintEvent *)
 		{
 			if (*ptr)
 			{
-				if ( x_step/2 > 5) // sometimes circles looks better :)
+				if ( x_step/2 < 1) // sometimes circles looks better :)
+				{
+					painter.drawPoint(
+						static_cast<int>(i * x_step - win_width / 2. + 0.5 * x_step),
+						static_cast<int>(j * y_step - win_height / 2. + 0.5 * y_step));
+					
+				}
+				else
 				{
 					painter.drawEllipse( QPointF(i * x_step - win_width/2.+ 0.5*x_step,
                                     			     j * y_step - win_height/2.+0.5*y_step),
 					                      x_step * 0.4, y_step * 0.4);
-				}
-				else
-				{
-					painter.drawPoint(
-            					static_cast<int>(i * x_step - win_width / 2. + 0.5 * x_step),
-            					static_cast<int>(j * y_step - win_height / 2. + 0.5 * y_step));
 				}
 			}
 		}
 	}
 	painter.setPen(QColor(0,0,0));
 // draw FPS
-	painter.drawText(QPoint(0, 0), QString(("FPS: "+ std::to_string(1.e6/time_delta_beween_frames)
+	painter.drawText(QPoint( win_width/2 - 200, +win_height / 2 - 10), QString(("FPS: "+ std::to_string(1.e6/time_delta_beween_frames)
                                           +" Process time:" + std::to_string(time_delta_in_frame ) + "mks"
                                          ).c_str()));
 }
@@ -96,6 +85,11 @@ void Life::setGrid(int width, int height)
 		grid[0][i] = 0;
 		grid[1][i] = 0;
 	}
+}
+
+void Life::setNumThreads(int x)
+{
+	omp_set_num_threads( x );
 }
 
 void Life::nextStep()

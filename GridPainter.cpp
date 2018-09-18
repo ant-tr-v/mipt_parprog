@@ -1,10 +1,4 @@
-//
-// Created by anton on 17.09.18.
-//
-
 #include "GridPainter.hpp"
-#include <QtWidgets>
-
 #include <iostream>
 #include <QtWidgets>
 #include <omp.h>
@@ -25,7 +19,13 @@ Life::Life(QWidget *parent)
 	setWindowTitle(("Life"));
 	resize( win_width, win_height);
 }
-
+/*		---------------------->	
+*               |                     y
+* 		|
+*		|
+*		|
+*		\/ x
+*/
 void Life::paintEvent(QPaintEvent *)
 {
 	QColor color(0, 240, 0);
@@ -58,22 +58,27 @@ void Life::paintEvent(QPaintEvent *)
 		{
 			if (*ptr)
 			{
-				/*painter.drawEllipse(QPointF(i * x_step - win_width/2.+ 0.5*x_step,
-                                    j * y_step - win_height/2.+0.5*y_step),
-					x_step * 0.4, y_step * 0.4);*/
-				painter.drawPoint(
-            static_cast<int>(i * x_step - win_width / 2. + 0.5 * x_step),
-            static_cast<int>(j * y_step - win_height / 2. + 0.5 * y_step)
-        );
+				if ( x_step/2 > 5) // sometimes circles looks better :)
+				{
+					painter.drawEllipse( QPointF(i * x_step - win_width/2.+ 0.5*x_step,
+                                    			     j * y_step - win_height/2.+0.5*y_step),
+					                      x_step * 0.4, y_step * 0.4);
+				}
+				else
+				{
+					painter.drawPoint(
+            					static_cast<int>(i * x_step - win_width / 2. + 0.5 * x_step),
+            					static_cast<int>(j * y_step - win_height / 2. + 0.5 * y_step));
+				}
 			}
 		}
 	}
 	painter.setPen(QColor(0,0,0));
+// draw FPS
 	painter.drawText(QPoint(0, 0), QString(("FPS: "+ std::to_string(1.e6/time_delta_beween_frames)
                                           +" Process time:" + std::to_string(time_delta_in_frame ) + "mks"
                                          ).c_str()));
 }
-
 void Life::setGrid(int width, int height)
 {
 	if (grid[1])
@@ -95,6 +100,9 @@ void Life::setGrid(int width, int height)
 
 void Life::nextStep()
 {
+/*this is necessary because  we donn't want to 
+* execute next step before before the previous one was completed
+*/
 	if (is_avaliable)
 	{
 		step();
@@ -102,7 +110,8 @@ void Life::nextStep()
 	}
 }
 
-inline int neybours(int i, int j, int m, int n, int* grind){
+inline int neybours(int i, int j, int m, int n, int* grind)
+{
   int x0 = (i + m - 1) % m, x2 = (i + 1) % m;
   int y0 = (j + n - 1) % n, y2 = (j + 1) % n;
   return  grind[x0 + y0 * m] + grind[x2 + y2 * m] +
@@ -144,10 +153,12 @@ void Life::step()
         }
       }
     }
-	}
-	active_index = next_index;
+}
+// this is time counting, do not look at this :)
+  active_index = next_index;
   time_delta_in_frame = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
   time_delta_beween_frames = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_frame).count();
   last_frame = std::chrono::high_resolution_clock::now();
+	
   is_avaliable = true;
 }

@@ -23,7 +23,8 @@ private:
   long time_delta_beween_frames = 2;
   std::chrono::time_point<std::chrono::high_resolution_clock> last_frame = std::chrono::high_resolution_clock::now();
 public:
-  Life(QWidget *parent = nullptr);
+  explicit Life(QWidget *parent = nullptr);
+  ~Life();
   void setGrid(int width, int height);
   void setPoint(int x, int y) { grid[active_index][x + y*g_width] = 1; }
   void setNumThreads(int x);

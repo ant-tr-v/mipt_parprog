@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
   srand(static_cast<unsigned int>(time(nullptr)));
   QApplication app(argc, argv);
   Life game;
-  game.setGrid(1000, 1000);
+  game.setGrid(1500, 1500);
   game.setNumThreads(4);
   setRandomGrid(game);
 

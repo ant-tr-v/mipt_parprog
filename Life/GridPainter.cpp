@@ -18,6 +18,13 @@ Life::Life(QWidget *parent)
 	resize( win_width, win_height);
 }
 
+Life::~Life() {
+	if (grid[1])
+		delete[] grid[1];
+	if (grid[0])
+		delete[] grid[0];
+}
+
 void Life::paintEvent(QPaintEvent *)
 {
 	QColor color(0, 240, 0);
@@ -65,7 +72,7 @@ void Life::paintEvent(QPaintEvent *)
 	painter.setPen(QColor(0,0,0));
 // draw FPS
 	painter.drawText(QPoint( win_width/2 - 200, +win_height / 2 - 10), QString(("FPS: "+ std::to_string(1.e6/time_delta_beween_frames)
-                                          +" Process time:" + std::to_string(time_delta_in_frame ) + "mks"
+                                          +" Process time:" + std::to_string(time_delta_in_frame ) + "ms"
                                          ).c_str()));
 }
 void Life::setGrid(int width, int height)
@@ -150,7 +157,7 @@ void Life::step()
 }
 // this is time counting, do not look at this :)
   active_index = next_index;
-  time_delta_in_frame = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+  time_delta_in_frame = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
   time_delta_beween_frames = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - last_frame).count();
   last_frame = std::chrono::high_resolution_clock::now();
 	

@@ -41,10 +41,14 @@ public:
   Matrix getRegion(long M1, long N1, long width, long height);
   Matrix(const Matrix& mat);
   bool operator == (const Matrix& mat);
+  friend Matrix transpose(Matrix &Mat);
   ~Matrix();
 };
 
+
 Matrix naive_matmul(Matrix& A, Matrix& B);
 Matrix naive_matmul_parallel(Matrix& A, Matrix& B);
+Matrix transposed_matmul(Matrix& A, Matrix& B);
+Matrix transposed_matmul_parallel(Matrix& A, Matrix& B);
 
 #endif //OMP_MATRIX_HPP

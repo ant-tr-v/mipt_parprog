@@ -10,7 +10,7 @@ Life::Life(QWidget *parent)
 	: QWidget(parent)
 {
 
-	QTimer *timer = new QTimer(this);
+  auto *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(nextStep()));
 	timer->start(1);
 	omp_set_num_threads(1);
@@ -38,7 +38,7 @@ void Life::paintEvent(QPaintEvent *)
 
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
-	painter.translate(width() / 2, height() / 2);
+	painter.translate(width() / 2., height() / 2.);
 	painter.scale(side / win_width, side / win_height);
 
 
@@ -135,24 +135,18 @@ void Life::step()
       int *ptr = grid[active_index] + i + j*g_width;
       int *new_ptr = grid[next_index] + i + j*g_width;
       int ney = neybours(i, j, g_width, g_height, grid[active_index]);
-		  if(*ptr == 0)
-		  {
-        if (ney == 3)
-          *new_ptr = 1;
-        else
-          *new_ptr = 0;
-      }
-      else
-      {
-        if (ney != 3 && ney != 2)
-        {
-          *new_ptr = 0;
-        }
-        else
-        {
-          *new_ptr = 1;
-        }
-      }
+			if (*ptr == 0) {
+				if (ney == 3)
+					*new_ptr = 1;
+				else
+					*new_ptr = 0;
+			} else {
+				if (ney != 3 && ney != 2) {
+					*new_ptr = 0;
+				} else {
+					*new_ptr = 1;
+				}
+			}
     }
 }
 // this is time counting, do not look at this :)

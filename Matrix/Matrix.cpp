@@ -113,6 +113,22 @@ bool Matrix::operator==(const Matrix &mat) {
   return true;
 }
 
+Matrix transpose(Matrix &Mat) {
+  Matrix res;
+  res.data = new double[Mat._height* Mat._height];
+  res.allocated = true;
+  res._height = Mat._width;
+  res._width = Mat._height;
+  res._stride = 0;
+  for(long i = 0; i < Mat._height; ++i){
+    Vector vec = Mat[i];
+    for(long j = 0; j < Mat._width; ++j){
+      res[j][i] = vec[j];
+    }
+  }
+  return res;
+}
+
 Matrix naive_matmul(Matrix& A, Matrix& B){
   assert(A.width() == B.height());
   auto depth = A.width();
@@ -150,3 +166,35 @@ Matrix naive_matmul_parallel(Matrix& A, Matrix& B){
   return res;
 }
 
+Matrix transposed_matmul(Matrix& A, Matrix& B){
+  assert(A.width() == B.height());
+  Matrix T = transpose(B);
+  auto width = B.width();
+  auto height = A.height();
+  Matrix res(height, width);
+  for (int i = 0; i < height; ++i){
+    Vector v = res[i];
+    Vector a = A[i];
+    for (int j = 0; j < width; ++j){
+      v[j] = a.dot(T[j]);
+    }
+  }
+  return res;
+}
+
+Matrix transposed_matmul_parallel(Matrix& A, Matrix& B){
+  assert(A.width() == B.height());
+  Matrix T = transpose(B);
+  auto width = B.width();
+  auto height = A.height();
+  Matrix res(height, width);
+#pragma omp parallel for
+  for (int i = 0; i < height; ++i){
+    Vector v = res[i];
+    Vector a = A[i];
+    for (int j = 0; j < width; ++j){
+      v[j] = a.dot(T[j]);
+    }
+  }
+  return res;
+}

@@ -10,7 +10,7 @@
 long NUM_THREADS = 8;
 long SIZE = 7;
 bool ALL = false;
-long ITER = 31;
+long ITER = 7;
 
 
 bool parse_args(int argc, char *argv[]){
@@ -33,7 +33,7 @@ bool parse_args(int argc, char *argv[]){
   return true;
 }
 
-const char* PATH = "/home/anton/programming/inf_mipt/seventh_sem/mipt_parprog/Matrix/results/res1.txt";
+const char* PATH = "/home/anton/programming/inf_mipt/seventh_sem/mipt_parprog/Matrix/results/res2.txt";
 
 
 int main(int argc, char *argv[]){
@@ -42,26 +42,27 @@ int main(int argc, char *argv[]){
     return 0;
   }
   omp_set_num_threads(static_cast<int>(NUM_THREADS));
-  std::default_random_engine gen;
+  std::default_random_engine gen(time(nullptr));
   std::uniform_real_distribution<double> dis(-1, 1);
   std::ofstream out(PATH);
   long l = SIZE, r = SIZE + 1;
   if (ALL){
-    l = 3;
-    r = 100;
+    l = 2;
+    r = 1024;
   }
   std::vector<long> num;
   std::vector<std::vector<long> > times_naive(static_cast<unsigned long>(ITER));
   std::vector<std::vector<long> > times_naive_parallel(static_cast<unsigned long>(ITER));
   std::vector<std::vector<long> > times_transposed(static_cast<unsigned long>(ITER));
   std::vector<std::vector<long> > times_transposed_parallel(static_cast<unsigned long>(ITER));
+  //std::vector<std::vector<long> > times_strassen(static_cast<unsigned long>(ITER));
+  std::vector<std::vector<long> > times_strassen_parallel(static_cast<unsigned long>(ITER));
 
   for(long cnt = 0; cnt < ITER; ++cnt) {
-    for (long size = l; size < r; ++size) {
+    for (long size = l; size <= r; size *= 2) {
       Matrix A(size, size);
       Matrix B(size, size);
-      if (!(size % 25))
-        std::cout << cnt + 1 <<"|" <<size << "\n";
+      std::cout << cnt + 1 <<"|" <<size << "\n";
       if(cnt == 0)
         num.push_back(size);
       for (int i = 0; i < size; ++i) {
@@ -72,6 +73,7 @@ int main(int argc, char *argv[]){
           line2[j] = dis(gen);
         }
       }
+      //omp_set_num_threads(static_cast<int>(NUM_THREADS));
       auto start = std::chrono::high_resolution_clock::now();
       Matrix C = naive_matmul(A, B);
       times_naive[cnt].push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count());
@@ -84,9 +86,18 @@ int main(int argc, char *argv[]){
       start = std::chrono::high_resolution_clock::now();
       Matrix F = transposed_matmul_parallel(A, B);
       times_transposed_parallel[cnt].push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count());
+      start = std::chrono::high_resolution_clock::now();
+//      Matrix G = strassen_matmul(A, B);
+//      times_strassen[cnt].push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count());
+//      start = std::chrono::high_resolution_clock::now();
+      Matrix H = strassen_matmul_parallel(A, B);
+      times_strassen_parallel[cnt].push_back(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start).count());
+
       assert(D == C);
       assert(E == C);
       assert(F == C);
+      //assert(G == C);
+      assert(H == C);
     }
   }
 
@@ -110,6 +121,16 @@ int main(int argc, char *argv[]){
     out << "transposed_parallel" << " " << num[i];
     for (long cnt = 0; cnt < ITER; ++cnt) {
       out << " " << times_transposed_parallel[cnt][i];
+    }
+    out <<"\n";
+//    out << "strassen" << " " << num[i];
+//    for (long cnt = 0; cnt < ITER; ++cnt) {
+//      out << " " << times_strassen[cnt][i];
+//    }
+//    out <<"\n";
+    out << "strassen_parallel" << " " << num[i];
+    for (long cnt = 0; cnt < ITER; ++cnt) {
+      out << " " << times_strassen_parallel[cnt][i];
     }
     out <<"\n";
   }

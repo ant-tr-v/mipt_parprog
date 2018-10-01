@@ -7,23 +7,27 @@
 
 
 class Vector {
-  double *data = nullptr;
+  double *_data = nullptr;
   long _size = 0;
   bool allocated = false;
+  const double eps = 1e-9;
 public:
   double& operator[](long ind){
-    return data[ind];
+    return _data[ind];
   };
   Vector(){;}
-  explicit Vector(long M,  double* _data=nullptr, bool allocate=false);
-  Vector (const Vector& vec):Vector(vec._size, vec.data, true){}; //delegated constructor, all hail C++11))
+  explicit Vector(long M,  double* data_ptr=nullptr, bool allocate=false);
+  Vector (const Vector& vec):Vector(vec._size, vec._data, true){}; //delegated constructor, all hail C++11))
   long size(){
     return _size;
   }
+  double * data() { return _data;};
   void operator += (const Vector& other);
+  void operator -= (const Vector& other);
   void operator *= (const Vector& other);
   void operator *= (double val);
   Vector operator + (const Vector& other) const;
+  Vector operator - (const Vector& other) const;
   Vector operator * (const Vector& other) const;
   Vector operator * (double val) const;
   void operator <<= (const Vector& vec); // copy into this vector, no allocation

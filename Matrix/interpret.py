@@ -6,7 +6,7 @@ from sklearn.linear_model import Lasso
 import re
 
 times = {'n': [], 'time': [], 'type': []}
-with open('./results/res1.txt', 'r') as f:
+with open('./results/res2.txt', 'r') as f:
     for l in f.readlines():
         m = re.match(r'(\S+)\s+(\d+)\s+((\d+\s*)+)', l)
         if m:
@@ -27,7 +27,7 @@ for t in types:
     arr.append((t, lr.coef_[0]))
 
 print('\n'.join(['{}: {}'.format(s[0], s[1]) for s in sorted(arr, key=lambda x: x[1])]))
-
+# print(data.tail(100))
 sns.scatterplot('n3', 'time', hue='type', data=data)
 plt.show()
 

@@ -12,6 +12,8 @@ SET(CMAKE_CXX_COMPILER mpicxx)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+add_executable(0_base 0_baseline.cpp)
+add_executable(0_mpi 0_mpi.cpp)
 add_executable(a1_base 1a_baseline.cpp)
 add_executable(a1_mpi 1a_mpi.cpp)
 add_executable(a2_base 2a_baseline.cpp)

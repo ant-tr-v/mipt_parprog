@@ -5,8 +5,8 @@
 #include <chrono>
 #include <vector>
 
-const int ISIZE = 1000;
-const int JSIZE = 1000;
+const int ISIZE = 5000;
+const int JSIZE = 5000;
 
 inline int line_size(int p){
   int a  = std::min(ISIZE, JSIZE);
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
       ++dst;
     }
   }
-  std::cout << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - time_s).count() << " us\n";
+  std::cout <<  rank <<" "<< std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - time_s).count() << " us\n";
 
   if (rank > 0){
     MPI::COMM_WORLD.Send(b, sizes[rank], MPI_DOUBLE, 0, rank);
@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     for (int k = 0; k < size; ++k) {
       double *tmp =(k)? new double[sizes[k]]: b;
       if(k) {
-        MPI::COMM_WORLD.Recv(tmp, ISIZE * sizes[k],
+        MPI::COMM_WORLD.Recv(tmp, sizes[k],
                              MPI_DOUBLE, MPI_ANY_SOURCE, k);
       }
       double *src = tmp;
@@ -86,12 +86,12 @@ int main(int argc, char **argv) {
     }
 
     ff = fopen("result_a1m.txt", "w");
-    for (int i = 0; i < ISIZE; i++) {
-      for (int j = 0; j < JSIZE; j++) {
-        fprintf(ff, "%f ", a[i][j]);
-      }
-      fprintf(ff, "\n");
-    }
+//    for (int i = 0; i < ISIZE; i++) {
+//      for (int j = 0; j < JSIZE; j++) {
+//        fprintf(ff, "%f ", a[i][j]);
+//      }
+//      fprintf(ff, "\n");
+//    }
     fclose(ff);
     delete[] a;
   }
